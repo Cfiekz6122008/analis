@@ -1,10 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block content %}
+<div class="analysis-form">
+    <h2>Анализ набора данных: {{ dataset.name }}</h2>
+
+    {% if error %}
+        <div class="alert alert-danger">
+            Ошибка: {{ error }}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="analysis_type">Тип анализа:</label>
+            <select name="analysis_type" id="analysis_type" class="form-control" required>
+                <option value="hist">Гистограмма</option>
+                <option value="scatter">Точечный график</option>
+                <option value="line">Линейный график</option>
+                <option value="bar">Столбчатая диаграмма</option>
+                <option value="pie">Круговая диаграмма</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="x_column">Столбец X:</label>
+            <select name="x_column" id="x_column" class="form-control" required>
+                {% for column in columns %}
+                    <option value="{{ column }}">{{ column }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div id="y_column_group" class="form-group" style="display:none;">
+            <label for="y_column">Столбец Y:</label>
+            <select name="y_column" id="y_column" class="form-control">
+                {% for column in columns %}
+                    <option value="{{ column }}">{{ column }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Анализировать</button>
+    </form>
+</div>
+
+<script>
+    // Показываем поле Y только для scatter и line графиков
+    document.getElementById('analysis_type').addEventListener('change', function() {
+        const yColumnGroup = document.getElementById('y_column_group');
+        if (this.value === 'scatter' || this.value === 'line') {
+            yColumnGroup.style.display = 'block';
+            document.getElementById('y_column').setAttribute('required', '');
+        } else {
+            yColumnGroup.style.display = 'none';
+            document.getElementById('y_column').removeAttribute('required');
+        }
+    });
+</script>
+{% endblock %}

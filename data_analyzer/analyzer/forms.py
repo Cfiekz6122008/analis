@@ -5,3 +5,6 @@ class DatasetForm(forms.ModelForm):
     class Meta:
         model = Dataset
         fields = ['name', 'file']
+        widgets = {
+            'file': forms.FileInput(attrs={'accept': '.csv'})
+        }

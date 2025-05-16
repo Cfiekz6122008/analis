@@ -1,10 +1,85 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block content %}
+<div class="analysis-result">
+    <h2>Результаты анализа: {{ analysis.get_analysis_type_display }}</h2>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="graph-container">
+                <img src="{{ image_url }}" alt="Результат анализа" class="img-fluid">
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="stats-card">
+                <h4>Статистика</h4>
+                <table class="table">
+                    <tr>
+                        <th>Параметр</th>
+                        <th>Столбец X ({{ analysis.x_column }})</th>
+                        {% if analysis.y_column %}
+                            <th>Столбец Y ({{ analysis.y_column }})</th>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td>Среднее</td>
+                        <td>{{ stats.x_column.mean|floatformat:2 }}</td>
+                        {% if analysis.y_column %}
+                            <td>{{ stats.y_column.mean|floatformat:2 }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td>Медиана</td>
+                        <td>{{ stats.x_column.median|floatformat:2 }}</td>
+                        {% if analysis.y_column %}
+                            <td>{{ stats.y_column.median|floatformat:2 }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td>Станд. отклонение</td>
+                        <td>{{ stats.x_column.std|floatformat:2 }}</td>
+                        {% if analysis.y_column %}
+                            <td>{{ stats.y_column.std|floatformat:2 }}</td>
+                        {% endif %}
+                    </tr>
+                </table>
+            </div>
+
+            <div class="actions mt-3">
+                <a href="{% url 'analyze' analysis.dataset.id %}" class="btn btn-primary">
+                    Новый анализ этого набора
+                </a>
+                <a href="{% url 'home' %}" class="btn btn-secondary">
+                    На главную
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .analysis-result {
+        margin-top: 2rem;
+    }
+    .graph-container {
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
+    }
+    .stats-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .table {
+        width: 100%;
+        margin-top: 1rem;
+    }
+    .table th, .table td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid #dee2e6;
